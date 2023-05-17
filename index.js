@@ -30,18 +30,31 @@ const coldplay = async () => {
 
   let buttonHref = null;
   while (!buttonHref) {
-    await page.goto('https://coldplayinjakarta.com/');
-    let html = await page.content();
-    const $ = cheerio.load(html);
-    // check button contain href or not
-    const button = $('div#layout > div:nth-of-type(2) > div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2) > div > div > div');
-    buttonHref = button.find('a').attr('href');
-    if (buttonHref) {
-      console.log('button href found');
-      await page.goto(buttonHref);
+    const currentDate = new Date();
+    // Convert to Jakarta timezone
+    currentDate.setHours(currentDate.getHours() + 7); 
+    // Get current hours and minutes
+    const currentHours = currentDate.getHours();
+    const currentMinutes = currentDate.getMinutes();
+    // Check if it's after 9:58
+    if (currentHours > 9 || (currentHours === 9 && currentMinutes >= 58)) {
+      await page.goto('https://coldplayinjakarta.com/');
+      let html = await page.content();
+      const $ = cheerio.load(html);
+      // check button contain href or not
+      const button = $('div#layout > div:nth-of-type(2) > div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2) > div > div > div');
+      buttonHref = button.find('a').attr('href');
+      if (buttonHref) {
+        console.log('button href found');
+        await page.goto(buttonHref);
+      } else {
+        console.log('button href not found');
+        await page.reload();
+      }
     } else {
-      console.log('button href not found');
-      await page.reload();
+      console.log('It\'s not time yet. Waiting...');
+      // Wait for a minute before checking again
+      await new Promise(resolve => setTimeout(resolve, 60000));
     }
   }
 };
