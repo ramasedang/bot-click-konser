@@ -1,9 +1,11 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import anonymizeUa from "puppeteer-extra-plugin-anonymize-ua";
 import cheerio from "cheerio";
 import { Cluster } from "puppeteer-cluster";
 
 puppeteer.use(StealthPlugin());
+puppeteer.use(anonymizeUa());
 
 const coldplay = async (isTimeCheckEnabled = true) => {
   const cluster = await Cluster.launch({
